@@ -1,0 +1,13 @@
+ALTER TABLE "Product"
+ADD COLUMN "sizes" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[],
+ADD COLUMN "colors" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];
+
+ALTER TABLE "OrderItem"
+ADD COLUMN "variantKey" TEXT NOT NULL DEFAULT '',
+ADD COLUMN "size" TEXT NOT NULL DEFAULT '',
+ADD COLUMN "color" TEXT NOT NULL DEFAULT '';
+
+ALTER TABLE "OrderItem" DROP CONSTRAINT "OrderItem_pkey";
+ALTER TABLE "OrderItem"
+ADD CONSTRAINT "OrderItem_pkey" PRIMARY KEY ("orderId", "productId", "variantKey");
+

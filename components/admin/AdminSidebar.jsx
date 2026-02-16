@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from "next/navigation"
-import { HomeIcon, ShieldCheckIcon, StoreIcon, TicketPercentIcon } from "lucide-react"
+import { CreditCardIcon, HistoryIcon, HomeIcon, LayoutListIcon, MailIcon, MessageSquareWarningIcon, SettingsIcon, ShieldCheckIcon, StoreIcon, TicketPercentIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { assets } from "@/assets/assets"
@@ -12,16 +12,24 @@ const AdminSidebar = () => {
 
     const sidebarLinks = [
         { name: 'Dashboard', href: '/admin', icon: HomeIcon },
+        { name: 'Orders', href: '/admin/orders', icon: LayoutListIcon },
         { name: 'Active Stores', href: '/admin/stores', icon: StoreIcon },
         { name: 'Approve Store', href: '/admin/approve', icon: ShieldCheckIcon },
         { name: 'Coupons', href: '/admin/coupons', icon: TicketPercentIcon  },
+        { name: 'Complaints', href: '/admin/complaints', icon: MessageSquareWarningIcon  },
+        { name: 'Returns', href: '/admin/returns', icon: MessageSquareWarningIcon  },
+        { name: 'Newsletter', href: '/admin/newsletter', icon: MailIcon  },
+        { name: 'Email Logs', href: '/admin/email-logs', icon: MailIcon  },
+        { name: 'Memberships', href: '/admin/memberships', icon: CreditCardIcon  },
+        { name: 'Audit Logs', href: '/admin/audit-logs', icon: HistoryIcon  },
+        { name: 'Settings', href: '/admin/settings', icon: SettingsIcon  },
     ]
 
     return (
         <div className="inline-flex h-full flex-col gap-5 border-r border-slate-200 sm:min-w-60">
             <div className="flex flex-col gap-3 justify-center items-center pt-8 max-sm:hidden">
-                <Image className="w-14 h-14 rounded-full" src={assets.gs_logo} alt="" width={80} height={80} />
-                <p className="text-slate-700">Hi, Group 8</p>
+                <Image className="w-14 h-14 rounded-full" src={assets.happy_store} alt="" width={80} height={80} />
+                <p className="text-slate-700">Hi, ThriftStore</p>
             </div>
 
             <div className="max-sm:mt-6">

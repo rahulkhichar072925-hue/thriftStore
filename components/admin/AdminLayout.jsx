@@ -5,20 +5,25 @@ import Link from "next/link"
 import { ArrowRightIcon } from "lucide-react"
 import AdminNavbar from "./AdminNavbar"
 import AdminSidebar from "./AdminSidebar"
+import { useUser } from "@clerk/nextjs"
 
 const AdminLayout = ({ children }) => {
 
+    const { isLoaded, isSignedIn, user } = useUser()
     const [isAdmin, setIsAdmin] = useState(false)
     const [loading, setLoading] = useState(true)
 
-    const fetchIsAdmin = async () => {
-        setIsAdmin(true)
+    const resolveAccess = async () => {
+        if (!isLoaded) return
+
+        const role = String(user?.publicMetadata?.role || "").toLowerCase()
+        setIsAdmin(isSignedIn && role === "admin")
         setLoading(false)
     }
 
     useEffect(() => {
-        fetchIsAdmin()
-    }, [])
+        resolveAccess()
+    }, [isLoaded, isSignedIn, user])
 
     return loading ? (
         <Loading />

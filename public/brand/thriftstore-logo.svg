@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="180" viewBox="0 0 640 180" role="img" aria-labelledby="title desc">
+  <title id="title">ThriftStore Logo</title>
+  <desc id="desc">ThriftStore wordmark with rounded shopping bag mark and gradient accent.</desc>
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#13C66A"/>
+      <stop offset="100%" stop-color="#0FAF84"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1F3256"/>
+      <stop offset="100%" stop-color="#334E7D"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="20" y="20" width="140" height="140" rx="34" fill="url(#g1)"/>
+  <path d="M66 70h48c8 0 14 6 14 14v34c0 8-6 14-14 14H66c-8 0-14-6-14-14V84c0-8 6-14 14-14z" fill="#fff"/>
+  <path d="M74 70c0-10 8-18 18-18h4c10 0 18 8 18 18" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="112" cy="100" r="5" fill="#13C66A"/>
+
+  <g font-family="Poppins, Segoe UI, Arial, sans-serif" font-weight="700">
+    <text x="185" y="104" font-size="72" fill="url(#g1)">Thrift</text>
+    <text x="384" y="104" font-size="72" fill="url(#g2)">Store</text>
+  </g>
+  <circle cx="572" cy="88" r="10" fill="#13C66A"/>
+</svg>
+

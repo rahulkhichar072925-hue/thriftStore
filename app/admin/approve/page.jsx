@@ -1,5 +1,4 @@
 'use client'
-import { storesDummyData } from "@/assets/assets"
 import StoreInfo from "@/components/admin/StoreInfo"
 import Loading from "@/components/Loading"
 import { useEffect, useState } from "react"
@@ -9,21 +8,45 @@ export default function AdminApprove() {
 
     const [stores, setStores] = useState([])
     const [loading, setLoading] = useState(true)
+    const normalizeStoreText = (value) => typeof value === "string" ? value.replaceAll("Group 8", "ThriftStore") : value
+    const normalizeStore = (store) => ({
+        ...store,
+        name: normalizeStoreText(store.name),
+        description: normalizeStoreText(store.description),
+        user: store.user ? { ...store.user, name: normalizeStoreText(store.user.name) } : store.user,
+    })
 
 
     const fetchStores = async () => {
-        setStores(storesDummyData)
+        const response = await fetch("/api/store-requests", { cache: "no-store" })
+        const payload = await response.json()
+        if (!response.ok || !payload?.success) {
+            throw new Error(payload?.message || "Failed to fetch store requests.")
+        }
+        const parsedStores = (payload?.data || []).map(normalizeStore)
+        setStores(parsedStores.filter((store) => store.status === "pending"))
         setLoading(false)
     }
 
     const handleApprove = async ({ storeId, status }) => {
-        // Logic to approve a store
-
-
+        const response = await fetch(`/api/store-requests/${storeId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status }),
+        })
+        const payload = await response.json()
+        if (!response.ok || !payload?.success) {
+            throw new Error(payload?.message || "Failed to update store.")
+        }
+        setStores((prev) => prev.filter((store) => store.id !== storeId))
+        return payload?.message || (status === "approved" ? "Store approved successfully." : "Store rejected.")
     }
 
     useEffect(() => {
-            fetchStores()
+            fetchStores().catch((error) => {
+                toast.error(error?.message || "Failed to load requests.")
+                setLoading(false)
+            })
     }, [])
 
     return !loading ? (
@@ -39,10 +62,10 @@ export default function AdminApprove() {
 
                             {/* Actions */}
                             <div className="flex gap-3 pt-2 flex-wrap">
-                                <button onClick={() => toast.promise(handleApprove({ storeId: store.id, status: 'approved' }), { loading: "approving" })} className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm" >
+                                <button onClick={() => toast.promise(handleApprove({ storeId: store.id, status: 'approved' }), { loading: "approving", success: (msg) => msg, error: (err) => err?.message || "Failed to approve" })} className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm" >
                                     Approve
                                 </button>
-                                <button onClick={() => toast.promise(handleApprove({ storeId: store.id, status: 'rejected' }), { loading: 'rejecting' })} className="px-4 py-2 bg-slate-500 text-white rounded hover:bg-slate-600 text-sm" >
+                                <button onClick={() => toast.promise(handleApprove({ storeId: store.id, status: 'rejected' }), { loading: 'rejecting', success: (msg) => msg, error: (err) => err?.message || "Failed to reject" })} className="px-4 py-2 bg-slate-500 text-white rounded hover:bg-slate-600 text-sm" >
                                     Reject
                                 </button>
                             </div>

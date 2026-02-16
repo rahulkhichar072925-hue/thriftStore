@@ -2,6 +2,7 @@
 import Banner from "@/components/Banner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ProductSync from "@/components/ProductSync";
 
 export default function PublicLayout({ children }) {
 
@@ -9,6 +10,7 @@ export default function PublicLayout({ children }) {
         <>
             <Banner />
             <Navbar />
+            <ProductSync />
             {children}
             <Footer />
         </>

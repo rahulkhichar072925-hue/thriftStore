@@ -7,10 +7,12 @@ import { Trash2Icon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { parseVariantKey } from "@/lib/cartKey";
 
 export default function Cart() {
 
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$';
+    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '₹';
     
     const { cartItems } = useSelector(state => state.cart);
     const products = useSelector(state => state.product.list);
@@ -24,10 +26,14 @@ export default function Cart() {
         setTotalPrice(0);
         const cartArray = [];
         for (const [key, value] of Object.entries(cartItems)) {
-            const product = products.find(product => product.id === key);
+            const variant = parseVariantKey(key);
+            const product = products.find(product => product.id === variant.productId);
             if (product) {
                 cartArray.push({
                     ...product,
+                    cartKey: key,
+                    selectedSize: variant.size,
+                    selectedColor: variant.color,
                     quantity: value,
                 });
                 setTotalPrice(prev => prev + product.price * value);
@@ -36,8 +42,8 @@ export default function Cart() {
         setCartArray(cartArray);
     }
 
-    const handleDeleteItemFromCart = (productId) => {
-        dispatch(deleteItemFromCart({ productId }))
+    const handleDeleteItemFromCart = (cartKey) => {
+        dispatch(deleteItemFromCart({ cartKey }))
     }
 
     useEffect(() => {
@@ -75,15 +81,35 @@ export default function Cart() {
                                             <div>
                                                 <p className="max-sm:text-sm">{item.name}</p>
                                                 <p className="text-xs text-slate-500">{item.category}</p>
+                                                {(item.selectedSize || item.selectedColor) && (
+                                                    <p className="text-xs text-slate-500">
+                                                        {item.selectedSize ? `Size: ${item.selectedSize}` : ""}
+                                                        {item.selectedSize && item.selectedColor ? " | " : ""}
+                                                        {item.selectedColor ? `Color: ${item.selectedColor}` : ""}
+                                                    </p>
+                                                )}
                                                 <p>{currency}{item.price}</p>
+                                                {(!item.inStock || Number(item.stockQty || 0) <= 0) && (
+                                                    <p className="text-xs text-rose-600 font-medium mt-1">Out of stock</p>
+                                                )}
+                                                {Boolean(item.inStock) && Number(item.stockQty || 0) > 0 && item.quantity > Number(item.stockQty || 0) && (
+                                                    <p className="text-xs text-amber-600 font-medium mt-1">
+                                                        Reduce quantity. Available: {Number(item.stockQty || 0)}
+                                                    </p>
+                                                )}
                                             </div>
                                         </td>
                                         <td className="text-center">
-                                            <Counter productId={item.id} />
+                                            <Counter
+                                                productId={item.id}
+                                                cartKey={item.cartKey}
+                                                maxQty={Number(item.stockQty || 0)}
+                                                onMaxReached={() => toast.error("Maximum available stock reached.")}
+                                            />
                                         </td>
                                         <td className="text-center">{currency}{(item.price * item.quantity).toLocaleString()}</td>
                                         <td className="text-center max-md:hidden">
-                                            <button onClick={() => handleDeleteItemFromCart(item.id)} className=" text-red-500 hover:bg-red-50 p-2.5 rounded-full active:scale-95 transition-all">
+                                            <button onClick={() => handleDeleteItemFromCart(item.cartKey)} className=" text-red-500 hover:bg-red-50 p-2.5 rounded-full active:scale-95 transition-all">
                                                 <Trash2Icon size={18} />
                                             </button>
                                         </td>

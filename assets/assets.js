@@ -1,4 +1,3 @@
-import gs_logo from "./gs_logo.jpg"
 import happy_store from "./happy_store.webp"
 import upload_area from "./upload_area.svg"
 import hero_model_img from "./hero_model_img.png"
@@ -23,7 +22,7 @@ import profile_pic3 from "./profile_pic3.jpg"
 
 export const assets = {
     upload_area, hero_model_img,
-    hero_product_img1, hero_product_img2, gs_logo,
+    hero_product_img1, hero_product_img2, happy_store,
     product_img1, product_img2, product_img3, product_img4, product_img5, product_img6,
     product_img7, product_img8, product_img9, product_img10, product_img11, product_img12,
 }
@@ -55,9 +54,9 @@ export const dummyStoreData = {
     updatedAt: "2025-09-04T09:04:44.273Z",
     user: {
         id: "user_31dOriXqC4TATvc0brIhlYbwwc5",
-        name: "Group 8",
+        name: "ThriftStore",
         email: "user.group8@gmail.com",
-        image: gs_logo,
+        image: happy_store,
     }
 }
 
@@ -614,9 +613,9 @@ export const couponDummyData = [
 
 export const dummyUserData = {
     id: "user_31dQbH27HVtovbs13X2cmqefddM",
-    name: "Group 8",
+    name: "ThriftStore",
     email: "group8@example.com",
-    image: gs_logo,
+    image: happy_store,
     cart: {}
 }
 
@@ -668,13 +667,13 @@ export const storesDummyData = [
     {
         id: "cmemkb98v0001tat8r1hiyxhn",
         userId: "user_31dOriXqC4TATvc0brIhlYbwwc5",
-        name: "Group 8",
-        description: "Group 8 is the education marketplace where you can buy goodies related to coding and tech",
-        username: "group8",
+        name: "ThriftStore",
+        description: "ThriftStore is the education marketplace where you can buy goodies related to coding and tech",
+        username: "thriftstore",
         address: "123 Maplewood Drive Springfield, IL 62704 USA",
         status: "approved",
         isActive: true,
-        logo: gs_logo,
+        logo: happy_store,
         email: "group8@example.com",
         contact: "+0 1234567890",
         createdAt: "2025-08-22T08:22:16.189Z",
