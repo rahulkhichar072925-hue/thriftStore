@@ -154,6 +154,16 @@ model EmailLog {
   createdAt  DateTime @default(now())
 }
 
+model SearchAnalyticsLog {
+  id            String   @id @default(cuid())
+  query         String
+  rewrittenQuery String   @default("")
+  filters       Json     @default("{}")
+  resultCount   Int      @default(0)
+  isZeroResult  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+}
+
 model Store {
   id          String      @id @default(cuid())
   userId      String      @unique

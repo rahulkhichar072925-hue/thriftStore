@@ -1,11 +1,15 @@
 'use client'
-import { StarIcon } from 'lucide-react'
+import { Heart, StarIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+
+const WISHLIST_STORAGE_KEY = "tsm_wishlist_product_ids"
 
 const ProductCard = ({ product }) => {
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '₹'
+    const [wishlisted, setWishlisted] = useState(false)
+    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || 'Rs'
     const ratings = Array.isArray(product?.rating) ? product.rating : []
     const rating = ratings.length
         ? Math.round((ratings.reduce((acc, curr) => acc + (curr?.rating || 0), 0) / ratings.length) * 10) / 10
@@ -29,6 +33,35 @@ const ProductCard = ({ product }) => {
     const stockQty = Number(product?.stockQty || 0)
     const isInStock = Boolean(product?.inStock) && stockQty > 0
     const isLowStock = isInStock && stockQty <= 3
+    const productId = product?.id
+
+    useEffect(() => {
+        if (!productId) return
+        try {
+            const saved = JSON.parse(localStorage.getItem(WISHLIST_STORAGE_KEY) || "[]")
+            setWishlisted(Array.isArray(saved) && saved.includes(productId))
+        } catch {
+            setWishlisted(false)
+        }
+    }, [productId])
+
+    const toggleWishlist = (event) => {
+        event.preventDefault()
+        event.stopPropagation()
+        if (!productId) return
+
+        try {
+            const saved = JSON.parse(localStorage.getItem(WISHLIST_STORAGE_KEY) || "[]")
+            const ids = Array.isArray(saved) ? saved : []
+            const exists = ids.includes(productId)
+            const next = exists ? ids.filter((id) => id !== productId) : [...ids, productId]
+            localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(next))
+            setWishlisted(!exists)
+            toast.success(exists ? "Removed from wishlist" : "Added to wishlist")
+        } catch {
+            toast.error("Could not update wishlist")
+        }
+    }
 
     return (
         <Link
@@ -58,6 +91,14 @@ const ProductCard = ({ product }) => {
                         Only {stockQty} left
                     </span>
                 )}
+                <button
+                    type='button'
+                    onClick={toggleWishlist}
+                    className='absolute bottom-2 right-2 inline-flex items-center justify-center size-8 rounded-full bg-white/95 border border-slate-200 text-slate-600 hover:text-rose-600'
+                    aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                >
+                    <Heart size={15} className={wishlisted ? "fill-rose-500 text-rose-500" : ""} />
+                </button>
             </div>
 
             <div className='pt-3 px-1'>

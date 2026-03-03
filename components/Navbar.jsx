@@ -1,5 +1,5 @@
 'use client'
-import { Bell, Search, ShoppingCart, ShieldCheck, Store, User } from "lucide-react";
+import { Bell, Menu, Search, ShieldCheck, ShoppingCart, Store, User, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -14,6 +14,8 @@ const Navbar = () => {
 
   const [search, setSearch] = useState("");
   const [showLoginOptions, setShowLoginOptions] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [hasSellerAccess, setHasSellerAccess] = useState(false);
   const cartCount = useSelector((state) => state.cart.total);
@@ -100,6 +102,8 @@ const Navbar = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     router.push(`/shop?search=${search}`);
+    setShowMobileMenu(false);
+    setShowMobileSearch(false);
   };
 
   useEffect(() => {
@@ -172,25 +176,38 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="relative bg-white">
+      <nav className="fixed top-0 left-0 right-0 z-40 bg-white">
         <div className="mx-6">
           <div className="flex items-center justify-between max-w-7xl mx-auto py-4 transition-all">
-            <button
-              type="button"
-              onClick={handleLogoBack}
-              className="relative"
-            >
-              <Image src="/brand/thriftstore-logo.svg" alt="ThriftStore" width={230} height={64} className="w-38 sm:w-48 h-auto" />
-              {hasPlusMembership ? (
-                <p className="absolute text-xs font-semibold -top-1 -right-8 px-3 p-0.5 rounded-full flex items-center gap-2 text-white bg-green-500">
-                  plus
-                </p>
-              ) : isSignedIn ? (
-                <span className="absolute -top-1 -right-5 p-1.5 rounded-full text-white bg-slate-600">
-                  <User size={10} />
-                </span>
-              ) : null}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMobileSearch(false);
+                  setShowMobileMenu((prev) => !prev);
+                }}
+                className="sm:hidden inline-flex items-center justify-center size-8 rounded-full border border-slate-200 bg-white text-slate-700"
+                aria-label="Open navigation menu"
+              >
+                {showMobileMenu ? <X size={15} /> : <Menu size={15} />}
+              </button>
+              <button
+                type="button"
+                onClick={handleLogoBack}
+                className="relative"
+              >
+                <Image src="/brand/thriftstore-logo.svg" alt="ThriftStore" width={230} height={64} className="w-38 sm:w-48 h-auto" />
+                {hasPlusMembership ? (
+                  <p className="absolute text-xs font-semibold -top-1 -right-8 px-3 p-0.5 rounded-full flex items-center gap-2 text-white bg-green-500">
+                    plus
+                  </p>
+                ) : isSignedIn ? (
+                  <span className="absolute -top-1 -right-5 p-1.5 rounded-full text-white bg-slate-600">
+                    <User size={10} />
+                  </span>
+                ) : null}
+              </button>
+            </div>
 
             <div className="hidden sm:flex items-center gap-4 lg:gap-8 text-slate-600">
               <Link href="/">Home</Link>
@@ -270,51 +287,94 @@ const Navbar = () => {
               </SignedOut>
             </div>
 
-            <div className="sm:hidden flex items-center gap-3">
-              {canShowAdminPanel && <Link href="/admin" className="text-sm text-slate-600">Admin Panel</Link>}
-              {canShowSellerPanel && <Link href="/store" className="text-sm text-slate-600">Seller Panel</Link>}
-              {canShowBecomeSeller && <Link href="/create-store" onClick={handleBecomeSellerClick} className="text-sm text-slate-600">Seller</Link>}
-              {isSignedIn && (
-                <Link href="/account/notifications" className="relative text-slate-600">
-                  <Bell size={18} />
-                  {unreadNotifications > 0 && (
-                    <span className="absolute -top-1 -right-1 flex items-center justify-center text-[8px] text-white bg-rose-500 size-3.5 rounded-full">
-                      {unreadNotifications > 9 ? "9+" : unreadNotifications}
-                    </span>
-                  )}
-                </Link>
-              )}
-              <SignedIn>
-                <Link href="/account" className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2 py-1 shadow-sm">
-                  {user?.imageUrl ? (
-                    <Image
-                      src={user.imageUrl}
-                      alt={user?.fullName || "User"}
-                      width={26}
-                      height={26}
-                      className="h-6 w-6 rounded-full object-cover ring-2 ring-slate-200"
-                    />
-                  ) : (
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-700 text-[10px] font-semibold text-white ring-2 ring-slate-200">
-                      {(user?.firstName || user?.fullName || "U").charAt(0).toUpperCase()}
-                    </span>
-                  )}
-                </Link>
-              </SignedIn>
-              <SignedOut>
-                <button
-                  type="button"
-                  onClick={() => setShowLoginOptions(true)}
-                  className="px-7 py-1.5 bg-indigo-500 hover:bg-indigo-600 text-sm transition text-white rounded-full"
-                >
-                  Login
-                </button>
-              </SignedOut>
+            <div className="sm:hidden flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMobileMenu(false);
+                  setShowMobileSearch((prev) => !prev);
+                }}
+                className="inline-flex items-center justify-center size-8 rounded-full border border-slate-200 bg-white text-slate-600"
+                aria-label="Open search"
+              >
+                {showMobileSearch ? <X size={15} /> : <Search size={15} />}
+              </button>
+              <Link href="/cart" className="relative inline-flex items-center justify-center size-8 rounded-full border border-slate-200 bg-white text-slate-600">
+                <ShoppingCart size={15} />
+                <span className="absolute -top-1 -right-1 flex items-center justify-center text-[8px] text-white bg-slate-700 size-4 rounded-full">
+                  {cartCount > 9 ? "9+" : cartCount}
+                </span>
+              </Link>
             </div>
           </div>
         </div>
         <hr className="border-gray-300" />
       </nav>
+      <div className="h-[73px]" />
+      {showMobileSearch && (
+        <div className="sm:hidden border-b border-slate-200 bg-white">
+          <div className="mx-6 py-3">
+            <form
+              onSubmit={handleSearch}
+              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5"
+            >
+              <Search size={16} className="text-slate-500" />
+              <input
+                className="w-full bg-transparent text-sm outline-none placeholder-slate-500"
+                type="text"
+                placeholder="Search products"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                required
+              />
+            </form>
+          </div>
+        </div>
+      )}
+      {showMobileMenu && (
+        <div className="sm:hidden border-b border-slate-200 bg-white">
+          <div className="mx-6 py-4 space-y-4">
+            <form
+              onSubmit={handleSearch}
+              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5"
+            >
+              <Search size={16} className="text-slate-500" />
+              <input
+                className="w-full bg-transparent text-sm outline-none placeholder-slate-500"
+                type="text"
+                placeholder="Search products"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                required
+              />
+            </form>
+
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <Link onClick={() => setShowMobileMenu(false)} href="/" className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">Home</Link>
+              <Link onClick={() => setShowMobileMenu(false)} href="/shop" className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">Shop</Link>
+              {canShowAdminPanel && <Link onClick={() => setShowMobileMenu(false)} href="/admin" className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">Admin Panel</Link>}
+              {canShowSellerPanel && <Link onClick={() => setShowMobileMenu(false)} href="/store" className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">Seller Panel</Link>}
+              {canShowBecomeSeller && <Link onClick={() => setShowMobileMenu(false)} href="/create-store" className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">Become Seller</Link>}
+              <Link onClick={() => setShowMobileMenu(false)} href="/cart" className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">Cart</Link>
+              {isSignedIn && <Link onClick={() => setShowMobileMenu(false)} href="/orders" className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">My Orders</Link>}
+              {isSignedIn && <Link onClick={() => setShowMobileMenu(false)} href="/account/notifications" className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">Notifications</Link>}
+              {isSignedIn && <Link onClick={() => setShowMobileMenu(false)} href="/account" className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700">My Account</Link>}
+              {!isSignedIn && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowMobileMenu(false);
+                    setShowLoginOptions(true);
+                  }}
+                  className="rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-indigo-700 text-left"
+                >
+                  Login
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {showLoginOptions && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">

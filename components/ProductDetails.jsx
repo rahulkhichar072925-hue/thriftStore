@@ -1,14 +1,16 @@
 'use client'
 
 import { addToCart } from "@/lib/features/cart/cartSlice";
-import { StarIcon, TagIcon, EarthIcon, CreditCardIcon, UserIcon } from "lucide-react";
+import { StarIcon, TagIcon, EarthIcon, CreditCardIcon, UserIcon, Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Counter from "./Counter";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { buildVariantKey } from "@/lib/cartKey";
+
+const WISHLIST_STORAGE_KEY = "tsm_wishlist_product_ids";
 
 const ProductDetails = ({ product }) => {
     const productId = product.id;
@@ -32,6 +34,7 @@ const ProductDetails = ({ product }) => {
     const colorOptions = Array.isArray(product?.colors) ? product.colors.filter(Boolean) : [];
     const [selectedSize, setSelectedSize] = useState(sizeOptions[0] || "");
     const [selectedColor, setSelectedColor] = useState(colorOptions[0] || "");
+    const [wishlisted, setWishlisted] = useState(false);
     const cartKey = buildVariantKey({ productId, size: selectedSize, color: selectedColor });
     const inCart = Boolean(cart[cartKey]);
     const stockQty = Number(product?.stockQty || 0);
@@ -83,6 +86,31 @@ const ProductDetails = ({ product }) => {
         setFailedImageMap((prev) => ({ ...prev, [cleanSrc]: true }));
     };
 
+    useEffect(() => {
+        if (!productId) return;
+        try {
+            const saved = JSON.parse(localStorage.getItem(WISHLIST_STORAGE_KEY) || "[]");
+            setWishlisted(Array.isArray(saved) && saved.includes(productId));
+        } catch {
+            setWishlisted(false);
+        }
+    }, [productId]);
+
+    const toggleWishlist = () => {
+        if (!productId) return;
+        try {
+            const saved = JSON.parse(localStorage.getItem(WISHLIST_STORAGE_KEY) || "[]");
+            const ids = Array.isArray(saved) ? saved : [];
+            const exists = ids.includes(productId);
+            const next = exists ? ids.filter((id) => id !== productId) : [...ids, productId];
+            localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(next));
+            setWishlisted(!exists);
+            toast.success(exists ? "Removed from wishlist" : "Added to wishlist");
+        } catch {
+            toast.error("Could not update wishlist.");
+        }
+    };
+
     return (
         <div className="flex max-lg:flex-col gap-12 pb-24 sm:pb-0">
             <div className="flex max-sm:flex-col-reverse gap-3">
@@ -116,7 +144,17 @@ const ProductDetails = ({ product }) => {
                 </div>
             </div>
             <div className="flex-1 lg:sticky lg:top-24 self-start">
-                <h1 className="text-3xl font-semibold text-slate-800">{product.name}</h1>
+                <div className="flex items-start justify-between gap-3">
+                    <h1 className="text-3xl font-semibold text-slate-800">{product.name}</h1>
+                    <button
+                        type="button"
+                        onClick={toggleWishlist}
+                        className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm ${wishlisted ? "border-rose-300 bg-rose-50 text-rose-700" : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"}`}
+                    >
+                        <Heart size={15} className={wishlisted ? "fill-rose-500 text-rose-500" : ""} />
+                        {wishlisted ? "Wishlisted" : "Wishlist"}
+                    </button>
+                </div>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                     <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
                         Brand: {product?.brand || "Unbranded"}
