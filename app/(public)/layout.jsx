@@ -3,7 +3,6 @@ import Banner from "@/components/Banner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductSync from "@/components/ProductSync";
-import AIAssistantLauncher from "@/components/AIAssistantLauncher";
 
 export default function PublicLayout({ children }) {
 
@@ -13,7 +12,6 @@ export default function PublicLayout({ children }) {
             <Navbar />
             <ProductSync />
             {children}
-            <AIAssistantLauncher />
             <Footer />
         </>
     );

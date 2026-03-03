@@ -3,6 +3,7 @@ import { Toaster } from "react-hot-toast";
 import StoreProvider from "@/app/StoreProvider";
 import { ClerkProvider } from "@clerk/nextjs";
 import CartPersistence from "@/components/CartPersistence";
+import AIAssistantLauncher from "@/components/AIAssistantLauncher";
 import "./globals.css";
 
 const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600"] });
@@ -43,6 +44,7 @@ export default function RootLayout({ children }) {
                         <CartPersistence />
                         <Toaster />
                         {children}
+                        <AIAssistantLauncher />
                     </StoreProvider>
                 </ClerkProvider>
             </body>
